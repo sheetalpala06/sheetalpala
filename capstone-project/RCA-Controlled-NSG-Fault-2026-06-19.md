@@ -35,6 +35,8 @@ A controlled and reversible fault was intentionally injected by modifying the Ne
 | 12:15:12 | Health isolation check | VM Run Command succeeded (vm-agent-ok) | Azure VM Agent |
 | 12:16:00 | Remediation | NSG rule reverted to Allow | Azure CLI |
 | 12:16:10 | Recovery verification | test-ip-flow returned Allow (baseline restored) | Network Watcher |
+| 12:31:41 | Full restore confirmation run | NSG rule remained Allow, test-ip-flow Allow, VM running | Azure CLI + Network Watcher |
+| 12:32:42 | Post-restore IaC drift validation | Terraform plan showed 1 add pending (azurerm_bastion_host.compute) | Terraform plan |
 
 ## 3. Detection
 The issue was detected using layered operational signals:
@@ -130,3 +132,20 @@ Recovery was verified as complete and consistent with pre-fault baseline behavio
 - Terraform detected drift and planned correction Deny -> Allow.
 - VM agent command succeeded during incident, confirming compute health.
 - Post-fix synthetic flow returned Allow, confirming recovery.
+
+## 11. Post-Restore Operational Result
+### Recovery State
+- Final restore run at 12:31:41 UTC confirmed:
+	- NSG SSH rule access set to Allow
+	- Network Watcher test-ip-flow result = Allow for inbound TCP/22
+	- VM power state = running
+
+### IaC Parity Check
+- Terraform drift check at 12:32:42 UTC reported:
+	- Plan: 1 to add, 0 to change, 0 to destroy
+	- Pending resource: azurerm_bastion_host.compute (finbridge-dev-bastion)
+
+### Interpretation
+- Fault remediation is complete for the injected NSG issue.
+- Environment access baseline is restored.
+- Full Terraform desired-state parity is not yet complete due to the pending Bastion host create action.
