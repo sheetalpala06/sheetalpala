@@ -1,0 +1,14 @@
+# Terraform local working directory
+**/.terraform/
+
+# Terraform lock file can be committed for modules, but ignore in training labs if undesired
+# **/.terraform.lock.hcl
+
+# Terraform state and plans
+**/*.tfstate
+**/*.tfstate.*
+**/tfplan
+**/tfplan-*
+
+# Local plan outputs
+**/plan-output.txt

@@ -1,0 +1,6 @@
+participant_name = "sheetal"
+aws_region       = "us-east-1"
+admin_password   = "ReplaceWithStrongPassword!"
+
+# Restrict to your own public IP/CIDR in real environments.
+eice_allowed_cidrs = ["0.0.0.0/0"]
