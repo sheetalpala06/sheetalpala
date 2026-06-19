@@ -1,0 +1,91 @@
+Phase 1: Prompt: 
+Act as a senior Azure Cloud Engineer and Terraform expert.
+FinBridge is migrating workloads to Azure, and my team is the **AI-augmented Ops (Compute Tower) ** responsible for standing up infrastructure from scratch using Infrastructure as Code (IaC).
+## Objective: Build a complete Terraform solution from scratch that provisions:
+* Resource Group
+* Virtual Network (VNet)
+* Subnet
+* Network Security Group (NSG) with inbound rules
+* Public IP
+* Network Interface
+* Virtual Machine (Linux preferred)
+* One Compute Tower resource (Azure Storage Account or equivalent)
+
+## Security Requirements: 
+* Use **SSH key-based authentication** for Linux VM (no passwords)
+* If Windows is used, enforce a **strong password (minimum 12 characters, complexity required)**
+* NSG must allow only required ports:
+  * SSH (22) for Linux OR RDP (3389) for Windows
+* Avoid open access (`*`); restrict using a specific IP range where possible
+
+## Terraform Requirements:
+* Use the **AzureRM provider**
+* Write **clean, production-quality Terraform code**
+* Use consistent naming convention:
+  ```
+  finbridge-{env}-{resource}
+  ```
+* Include:
+  * variables.tf
+  * outputs.tf
+  * main.tf
+* Add **tags** to all resources:
+  * environment = dev
+  * project = finbridge
+  * tower = compute
+
+##  Day‑4 Gates (MANDATORY BEFORE APPLY)
+Before applying Terraform, enforce these 4 gates:
+### 1. Lint Gate (Code Quality)
+Run:
+* `terraform fmt -recursive`
+* `terraform validate`
+Ensure:
+* No syntax issues
+* Proper formatting
+***
+### 2. Dry-Run Gate (Execution Preview)
+Run:
+* `terraform plan -out=tfplan`
+Ensure:
+* Only intended resources are created
+* No unexpected changes or deletions
+***
+
+### 3. Idempotency Gate (Repeatability)
+Run:
+* `terraform apply tfplan`
+* `terraform plan`
+Ensure:
+* Output shows **“No changes”**
+* Infrastructure is stable and reproducible
+***
+### 4. Bounded Scope Gate (Blast Radius Control)
+Ensure:
+* Only Compute Tower-related resources are managed
+* No unintended resources are impacted
+* Use:
+  * explicit naming
+  * tagging
+  * optional `lifecycle { prevent_destroy = true }` for critical resources
+Optional validation:
+* `terraform plan -target=<resource>`
+***
+## 🚀 Output Requirements
+Provide:
+1. Complete Terraform code (main.tf, variables.tf, outputs.tf)
+2. Clear execution steps
+3. Commands for all 4 Day‑4 gates
+4. Notes on best practices and security improvements
+
+***
+
+## Expected Outcome
+
+A fully functional, secure Azure infrastructure deployment for the Compute Tower that:
+
+* Passes all 4 Day‑4 gates
+* Is idempotent
+* Follows best practices
+* Is production-ready
+

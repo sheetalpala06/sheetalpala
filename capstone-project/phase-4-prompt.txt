@@ -1,0 +1,84 @@
+You are a senior Cloud SRE specializing in Azure networking and incident analysis.
+
+Your task is to generate a complete Root Cause Analysis (RCA) based on a controlled fault injection scenario.
+
+---
+
+### Incident Details
+
+A controlled fault was introduced by modifying an Azure Network Security Group (NSG):
+
+- Resource: finbridge-dev-nsg
+- Rule: allow-ssh-from-bastion-subnet
+- Change: SSH (TCP/22) rule modified from Allow → Deny
+- Timestamp: 12:11:13 UTC
+
+---
+
+### Observed Impact
+
+- Inbound SSH connectivity from the bastion subnet to finbridge-dev-vm was blocked
+- Synthetic connectivity monitoring changed from Allow → Deny for TCP/22
+- Virtual machine health remained normal:
+  - Azure Run Command via agent succeeded
+  - No OS-level or application failure observed
+- Impact limited to network access (no compute/service degradation)
+
+---
+
+### Your Task
+
+Analyze the scenario and generate a structured RCA report.
+
+---
+
+### Output Format (Strict)
+
+#### 1. Incident Summary
+- Clear description of what happened
+- Scope and impact
+
+#### 2. Timeline
+- Include:
+  - Fault injection time
+  - Detection time (synthetic check failure)
+  - Validation points
+
+#### 3. Detection
+- How the issue was detected
+- Signals (synthetic monitoring, connectivity tests)
+
+#### 4. Root Cause
+- Precise technical explanation:
+  - NSG rule misconfiguration
+  - Effect on TCP/22 traffic flow
+
+#### 5. Contributing Factors
+- Lack of guardrails / alerts
+- Absence of pre-validation
+- Any monitoring gaps
+
+#### 6. Impact Assessment
+- Systems affected
+- What worked vs what failed
+- Blast radius (network-only impact)
+
+#### 7. Resolution
+- Immediate mitigation (reverting NSG rule to Allow)
+- Validation steps performed
+
+#### 8. Verification
+- Evidence of recovery:
+  - SSH connectivity restored
+  - Synthetic checks returned to Allow
+  - Comparison with baseline
+
+#### 9. Preventive Actions
+- NSG change validation controls
+- Alerting improvements (connectivity monitoring)
+- Access testing automation
+- Change management recommendations
+
+#### 10. Key Learnings
+- Insights about network vs compute isolation
+- Value of synthetic monitoring

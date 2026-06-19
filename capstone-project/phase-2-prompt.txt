@@ -1,0 +1,67 @@
+Phase 2 Prompt: 
+Step 1: 
+Objective: 
+You are a VMware L3 Engineer. Your task is to design a safe fault-injection experiment for VM performance degradation along with a guaranteed rollback mechanism. 
+
+STRICT RULE: The restore script MUST be written and validated first. No fault injection should be executed without a tested rollback. 
+Assume: 
+- Target system: Linux-based Virtual Machine
+ - Access level: sudo/root 
+- No permanent damage allowed 
+- Fault must be reversible 
+- Logging must be enabled for both fault and restore operations 
+
+Step 2: 
+Restore Script Requirement:
+MANDATORY): Create a restore script that fully reverts all changes. 
+The restore script must: 
+- Stop all injected faults (CPU, memory, disk, network stress) 
+- Remove any background processes started 
+- Reset system configurations to original state 
+- Verify system health (CPU usage, memory usage, disk IO, network) 
+- Include logging and success/failure output 
+- Be idempotent (safe to run multiple times) 
+Step 3: 
+Validate the restore script independently by: 
+- Simulating possible degraded states (dummy processes if needed) 
+- Running restore script 
+- Confirming system returns to baseline 
+- Providing verification commands and expected outputs 
+Step 4: 
+Create a fault-injection script that simulates VM performance degradation safely. 
+Fault scenarios to include:
+ - CPU stress (e.g., stress-ng or yes loops) 
+- Memory pressure (consume memory safely) 
+- Disk IO saturation 
+- Optional: network latency (tc/netem) 
+The script must: 
+- Be time-bound OR manually stoppable
+ - Track all PIDs of injected processes
+ - Log all actions 
+- Avoid system crash or data loss 
+Step 5: 
+Add safety mechanisms: 
+- Automatic timeout to stop faults 
+- PID tracking for cleanup
+ - Resource usage caps (avoid full outage) 
+- Signal handling (CTRL+C triggers cleanup) 
+
+Step 6: Rollback Enforcement Gate 
+Before running fault script:
+- Explicitly confirm restore script works
+- Provide command sequence:
+
+1. Run restore (test)
+2. Run fault injection
+3. Run restore again
+
+If restore fails → DO NOT RUN FAULT SCRIPT
+Step 7: Output Format
+Provide: 
+1. Restore script (first) 
+2. Restore validation steps 
+3. Fault injection script
+4. Execution order (strict) 
+5. Verification commands 6. Risk notes
+
+Note: If you cannot guarantee safe rollback, do not generate the fault script. All scripts must be production-safe and follow best practices. 

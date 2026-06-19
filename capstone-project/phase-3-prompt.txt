@@ -1,0 +1,85 @@
+Simulate a controlled failure (“break”) in the deployed Terraform-based Azure infrastructure and detect, trace, and document the issue using structured Day 7 operational practices.
+________________________________________
+Task: Break & Detect Scenario
+Step 1: Trigger the Fault (Controlled Failure)
+Introduce a realistic fault in the environment. Examples:
+•	Block SSH access by modifying NSG rules
+•	Stop or deallocate the VM
+•	Corrupt or detach the network interface
+•	Misconfigure subnet or routing
+•	Remove public IP association
+Ensure the failure is:
+•	Controlled
+•	Reversible
+•	Limited in scope (Compute Tower only)
+________________________________________
+Step 2: Detection (Observation Phase)
+Actively monitor and detect the issue using:
+•	Azure Portal
+•	Terraform state vs actual infra
+•	VM connectivity checks (SSH/RDP)
+•	Azure Monitor / Activity Logs
+________________________________________
+📊 Step 3: Capture Evidence (Day 7 Style)
+Document findings in a structured, chronological format.
+________________________________________
+🧾 Required Output Format
+1. Incident Summary
+•	What was the fault introduced?
+•	What impact was observed?
+________________________________________
+2. Timeline (with timestamps)
+Timestamp	Action	Observation	Source
+HH:MM:SS	Fault triggered	SSH failed	CLI
+HH:MM:SS	Checked NSG	Port 22 blocked	Azure Portal
+________________________________________
+3. Observations (Structured)
+•	What: (What failed?)
+•	Where: (Which resource? VM, NSG, NIC, etc.)
+•	When: (Exact timestamp)
+•	How detected: (Alert, manual check, Terraform plan, logs)
+________________________________________
+4. Investigation Path (Order of Analysis)
+List step-by-step debugging sequence:
+1.	Checked VM status
+2.	Attempted SSH → failed
+3.	Verified NSG rules
+4.	Identified blocked port
+________________________________________
+5. Evidence Collected
+Include:
+•	Terraform plan output (drift if any)
+•	Azure Activity Logs
+•	Error messages (SSH timeout, etc.)
+•	Resource configuration snapshots
+________________________________________
+6. Root Cause Analysis (RCA)
+•	Exact misconfiguration or failure trigger
+•	Why it caused the issue
+•	Why it wasn’t prevented earlier
+________________________________________
+7. Resolution
+•	Steps taken to fix
+•	Validation performed (e.g., SSH restored)
+________________________________________
+8. Preventive Measures
+Recommend improvements such as:
+•	NSG guardrails
+•	Terraform policy checks
+•	Alerts for connectivity loss
+•	CI/CD validation gates
+________________________________________
+Success Criteria
+•	Fault successfully triggered and detected
+•	Observations recorded in sequence with timestamps
+•	RCA clearly explained
+•	Evidence is structured and reproducible
+•	Fix is validated
+________________________________________
+Expected Outcome
+A Day 7 ready incident report demonstrating:
+•	Observability maturity
+•	Structured troubleshooting
+•	AI augmented Ops discipline
+•	Production-grade incident handling
+

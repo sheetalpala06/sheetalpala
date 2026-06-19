@@ -1,0 +1,123 @@
+I will implement this end-to-end in your workspace with rollback-first enforcement: create the restore script first, add a separate validation helper, then add the fault injection script only after wiring a hard gate that requires a successful restore check. I’m quickly checking existing repo notes and file context now so the scripts match your project conventions.
+
+I’m pulling the repository memory note now and then I’ll create the scripts with conservative limits, PID tracking, and idempotent cleanup.
+
+Read memory [](file:///c%3A/Users/labuser/AppData/Roaming/Code/User/workspaceStorage/2173fc5dcc1b78ccf2ef22396b6c822a/GitHub.copilot-chat/memory-tool/memories/repo/terraform-notes.md)
+
+Read [](file:///c%3A/Users/labuser/Documents/training/capstone-project)
+
+Created 5 todos
+
+I’ve confirmed there are no existing fault-injection scripts in this workspace, so I’m now creating a rollback script first with strict idempotent cleanup, health checks, and structured logs. After that I’ll add a validator that proves rollback works before enabling fault injection.
+
+Created [](file:///c%3A/Users/labuser/Documents/training/capstone-project/restore_vm_faults.sh)
+
+Created [](file:///c%3A/Users/labuser/Documents/training/capstone-project/validate_restore.sh)
+
+Next I’m adding the fault-injection script, but with a hard rollback gate: it will refuse to run unless restore validation has already succeeded and a pre-run restore test returns success.
+
+Created [](file:///c%3A/Users/labuser/Documents/training/capstone-project/inject_vm_faults.sh)
+
+I’ve created all three scripts and now I’m doing a syntax and logic pass to catch edge-case bugs before finalizing execution instructions.
+
+Read [](file:///c%3A/Users/labuser/Documents/training/capstone-project/restore_vm_faults.sh)
+
+Read [](file:///c%3A/Users/labuser/Documents/training/capstone-project/validate_restore.sh)
+
+Read [](file:///c%3A/Users/labuser/Documents/training/capstone-project/inject_vm_faults.sh)
+
+Generating patch (70 lines) in [](file:///c%3A/Users/labuser/Documents/training/capstone-project/restore_vm_faults.sh)
+
+
+```
+
+```
+
+
+Generating patch (113 lines) in [](file:///c%3A/Users/labuser/Documents/training/capstone-project/validate_restore.sh)
+
+
+```
+
+```
+I’ve patched verification logic to close two safety gaps (network-check persistence and PID stop validation). I’m now running a quick syntax parse to ensure all scripts are clean.
+
+Ran terminal command: bash -n ./restore_vm_faults.sh; bash -n ./validate_restore.sh; bash -n ./inject_vm_faults.sh
+Completed with input: bash -n ./restore_vm_faults.sh; bash -n ./validate_restore.sh; bash -n ./inject_vm_faults.sh
+
+Starting: *Document strict execution order* (5/5)
+
+Created [](file:///c%3A/Users/labuser/Documents/training/capstone-project/FAULT-INJECTION-GUIDE.md)
+
+Completed: *Document strict execution order* (5/5)
+
+Implemented exactly with rollback-first enforcement and a hard gate before fault injection.
+
+1. Restore script (first)
+- Created: restore_vm_faults.sh
+- Behavior:
+1. Stops all tracked fault processes (CPU, memory, disk) using PID list.
+2. Removes disk stress artifact file and metadata.
+3. Removes netem qdisc from recorded interface.
+4. Captures post-restore health snapshot (CPU, memory, disk, network).
+5. Logs all actions to /var/log/vm-fault-restore.log.
+6. Outputs RESTORE_STATUS=SUCCESS or RESTORE_STATUS=FAILED.
+7. Idempotent: safe to run repeatedly.
+
+2. Restore validation steps (independent)
+- Created: validate_restore.sh
+- It simulates degraded state with dummy CPU/memory/disk load, optionally applies netem, runs restore, and verifies baseline.
+- On success it writes marker file /var/tmp/vm-fault-injection/restore_validated.ok.
+- Logs to /var/log/vm-fault-restore-validation.log.
+- Command sequence:
+1. sudo bash restore_vm_faults.sh
+2. sudo bash validate_restore.sh
+- Expected success lines:
+1. RESTORE_STATUS=SUCCESS
+2. VALIDATION_STATUS=SUCCESS
+
+3. Fault injection script
+- Created: inject_vm_faults.sh
+- Included faults:
+1. CPU stress (stress-ng preferred, yes-loop fallback)
+2. Memory pressure (stress-ng preferred, python fallback)
+3. Disk IO saturation (dd loop on temporary file)
+4. Optional network latency via tc netem
+- Safety mechanisms included:
+1. Automatic timeout cleanup
+2. PID tracking for all started processes
+3. Conservative resource caps
+4. Signal handling so Ctrl+C triggers restore
+5. Logging to /var/log/vm-fault-injection.log
+6. Hard rollback gate: refuses to run unless validation marker exists and a pre-flight restore test succeeds
+
+4. Execution order (strict)
+- Also documented in: FAULT-INJECTION-GUIDE.md
+1. sudo bash restore_vm_faults.sh
+2. sudo bash validate_restore.sh
+3. sudo DURATION_SEC=120 CPU_WORKERS=2 MEMORY_MB=256 DISK_FILE_MB=256 ENABLE_NETEM=0 bash inject_vm_faults.sh
+4. sudo bash restore_vm_faults.sh
+- Enforcement rule implemented: if restore check fails, injection exits and does not run.
+
+5. Verification commands
+- Included in: FAULT-INJECTION-GUIDE.md
+- Key checks after restore:
+1. Tail restore log and confirm RESTORE_STATUS=SUCCESS
+2. Confirm PID file removed
+3. Confirm temporary disk file removed
+4. Confirm tc qdisc has no netem on target interface
+5. Snapshot CPU/memory/disk metrics (vmstat/free/iostat)
+
+6. Risk notes
+- Included in: FAULT-INJECTION-GUIDE.md
+- Main safety boundaries:
+1. Process termination is limited to tracked PIDs started by this experiment.
+2. No destructive filesystem operations; disk stress uses a temp file only.
+3. Network rollback targets only interface recorded by this experiment.
+4. Conservative caps reduce outage risk.
+
+Validation status in this Windows workspace
+- I could not run bash syntax/execute tests locally because bash is not installed in this host terminal (PowerShell returned command not found).
+- Scripts are prepared for the Linux target VM as requested; run the strict sequence above on that VM to validate end-to-end.
+
+Made changes.
